@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ManagePc</string>
+    <string name="action_show_keyboard_title">Mostrar teclado</string>
+</resources>
