@@ -1,6 +1,8 @@
 package com.ncatz.yeray697.managepc;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,10 +10,20 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.NumberPicker;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.ncatz.yeray697.managepc.components.MouseView;
 import com.ncatz.yeray697.managepc.socket.Client;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MouseListener {
 
@@ -61,11 +73,27 @@ public class MainActivity extends AppCompatActivity implements MouseListener {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_show_keyboard) {
-            showKeyboard();
-            result = true;
-        } else
-            result = super.onOptionsItemSelected(item);
+        switch (id) {
+            case R.id.action_show_keyboard:
+                showKeyboard();
+                result = true;
+                break;
+            case R.id.action_volume_down:
+                client.sendMessage(Client.ORDER_VOLUME_DOWN,"");
+                result = true;
+                break;
+            case R.id.action_volume_up:
+                client.sendMessage(Client.ORDER_VOLUME_UP,"");
+                result = true;
+                break;
+            case R.id.action_timer:
+                showShutdownDialog();
+                result = true;
+                break;
+            default:
+                result = super.onOptionsItemSelected(item);
+                break;
+        }
         return result;
     }
 
@@ -117,5 +145,71 @@ public class MainActivity extends AppCompatActivity implements MouseListener {
 
 
         return super.dispatchKeyEvent(KEvent);
+    }
+
+    private void showShutdownDialog() {
+
+        // custom dialog
+        final Dialog d = new Dialog(this);
+        d.setContentView(R.layout.rb_dialog_shutdown);
+        List<String> stringList=new ArrayList<>();
+        stringList.add("Cancelar");
+        stringList.add("Ahora");
+        stringList.add("X minutos");
+        RadioGroup rg = (RadioGroup) d.findViewById(R.id.rgShutdownDialog);
+
+        for(int i=0;i<stringList.size();i++){
+            RadioButton rb=new RadioButton(this); // dynamically creating RadioButton and adding to RadioGroup.
+            rb.setText(stringList.get(i));
+            rg.addView(rb);
+        }
+
+        d.show();
+
+        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                int childCount = group.getChildCount();
+                for (int x = 0; x < childCount; x++) {
+                    RadioButton btn = (RadioButton) group.getChildAt(x);
+                    if (btn.getId() == checkedId) {
+                        if (btn.getText().toString().equals("Cancelar")) {
+                            client.sendMessage(Client.ORDER_TIMER,"-1");
+                        } else if (btn.getText().toString().equals("Ahora")) {
+                            client.sendMessage(Client.ORDER_TIMER,"0");
+                        } else if (btn.getText().toString().equals("X minutos")) {
+                            showShutdownTimeDialog();
+                        }
+                        d.dismiss();
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
+    private void showShutdownTimeDialog() {
+        final Dialog d = new Dialog(MainActivity.this);
+        d.setTitle("Tiempo para apagar");
+        d.setContentView(R.layout.rb_dialog_shutdown_timer);
+        Button btOk = (Button) d.findViewById(R.id.btOkShutdownTimer);
+        final NumberPicker np = (NumberPicker) d.findViewById(R.id.npShutdownTimer);
+        np.setMinValue(1);
+        np.setMaxValue(Integer.MAX_VALUE);
+        np.setValue(30);
+        np.setValue(30);
+        np.setWrapSelectorWheel(false);
+        btOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                client.sendMessage(Client.ORDER_TIMER, String.valueOf(np.getValue()));
+                d.dismiss();
+            }
+        });
+
+        // (That new View is just there to have something inside the dialog that can grow big enough to cover the whole screen.)
+
+        d.show();
     }
 }

@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-<item
-    android:id="@+id/action_show_keyboard"
-    app:showAsAction="always"
-    android:title="@string/action_show_keyboard_title"
-    android:icon="@drawable/ic_keyboard"/>
+    <item
+        android:id="@+id/action_volume_down"
+        app:showAsAction="always"
+        android:title="@string/action_volume_down_title"
+        android:icon="@drawable/ic_volume_down"/>
+    <item
+        android:id="@+id/action_volume_up"
+        app:showAsAction="always"
+        android:title="@string/action_volume_up_title"
+        android:icon="@drawable/ic_volume_up"/>
+    <item
+        android:id="@+id/action_timer"
+        app:showAsAction="always"
+        android:title="@string/action_timer_title"
+        android:icon="@drawable/ic_timer"/>
+    <item
+        android:id="@+id/action_show_keyboard"
+        app:showAsAction="always"
+        android:title="@string/action_show_keyboard_title"
+        android:icon="@drawable/ic_keyboard"/>
 </menu>

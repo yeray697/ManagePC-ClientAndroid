@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">ManagePc</string>
     <string name="action_show_keyboard_title">Mostrar teclado</string>
+    <string name="action_volume_down_title">Bajar volumen</string>
+    <string name="action_volume_up_title">Subir volumen</string>
+    <string name="action_timer_title">Programar apagado</string>
 </resources>
